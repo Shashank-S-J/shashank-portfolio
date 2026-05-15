@@ -1,4 +1,4 @@
-name: Deploy to Cloudflare Pages
+name: Deploy to Cloudflare Workers
 
 on:
   push:
@@ -10,7 +10,7 @@ permissions:
   deployments: write
 
 concurrency:
-  group: cf-pages-${{ github.ref }}
+  group: cf-workers-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -38,10 +38,11 @@ jobs:
       - name: Build Astro site
         run: npm run build
 
-      - name: Deploy to Cloudflare Pages
+      - name: Deploy to Cloudflare Workers
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy portfolio/dist --project-name=shashank-portfolio --branch=${{ github.ref_name }}
-          workingDirectory: .
+          workingDirectory: portfolio
+          command: deploy
+
