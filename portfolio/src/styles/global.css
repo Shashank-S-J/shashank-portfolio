@@ -23,42 +23,67 @@
         touch-action: manipulation;
         -webkit-tap-highlight-color: transparent;
         /* Apple-style typography: SF on iOS/macOS, system UI font elsewhere */
-        font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display',
-        'Helvetica Neue', 'Segoe UI', Roboto, system-ui, sans-serif;
+        font-family:
+                -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display",
+                "Helvetica Neue", "Segoe UI", Roboto, system-ui, sans-serif;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
         text-rendering: optimizeLegibility;
-        font-feature-settings: 'ss01', 'cv11', 'kern';
+        font-feature-settings: "ss01", "cv11", "kern";
         letter-spacing: -0.011em;
     }
     /* SF Pro Display is auto-selected at large sizes on Apple devices via the
        -apple-system stack; tighten optical tracking for big headings. */
-    h1, h2, h3, .font-display {
-        font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text',
-        'Helvetica Neue', 'Segoe UI', Roboto, system-ui, sans-serif;
+    h1,
+    h2,
+    h3,
+    .font-display {
+        font-family:
+                -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+                "Helvetica Neue", "Segoe UI", Roboto, system-ui, sans-serif;
         letter-spacing: -0.022em;
     }
     /* Tabular numerals for stats / counters / timestamps */
-    [data-tabular], .tabular-nums, .font-mono { font-variant-numeric: tabular-nums; }
+    [data-tabular],
+    .tabular-nums,
+    .font-mono {
+        font-variant-numeric: tabular-nums;
+    }
     /* Reserve space at the bottom for the mobile dock nav (md- only). */
     @media (max-width: 767px) {
-        body { padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px)); }
+        body {
+            padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+        }
     }
     /* Any tappable element should never show the iOS gray tap flash */
-    a, button, [role='button'], [data-magnetic], [data-haptic], .tap-press {
+    a,
+    button,
+    [role="button"],
+    [data-magnetic],
+    [data-haptic],
+    .tap-press {
         -webkit-tap-highlight-color: transparent;
     }
-    ::-webkit-scrollbar { width: 10px; }
-    ::-webkit-scrollbar-track { background: #0a0a0f; }
-    ::-webkit-scrollbar-thumb { background: #26262f; border-radius: 8px; }
-    ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+    ::-webkit-scrollbar {
+        width: 10px;
+    }
+    ::-webkit-scrollbar-track {
+        background: #0a0a0f;
+    }
+    ::-webkit-scrollbar-thumb {
+        background: #26262f;
+        border-radius: 8px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        background: #3b82f6;
+    }
 }
 
 @layer components {
     /* ── Pulsing ripple rings on the current timeline dot ──────────────────── */
     [data-timeline-current-dot]::before,
     [data-timeline-current-dot]::after {
-        content: '';
+        content: "";
         position: absolute;
         inset: 0;
         border-radius: 50%;
@@ -66,17 +91,28 @@
         pointer-events: none;
         animation: tl-ripple 2.4s cubic-bezier(0.22, 0.61, 0.36, 1) infinite;
     }
-    [data-timeline-current-dot]::after { animation-delay: 1.2s; }
+    [data-timeline-current-dot]::after {
+        animation-delay: 1.2s;
+    }
     @keyframes tl-ripple {
-        0%   { transform: scale(1);   opacity: 0.8; }
-        80%  { transform: scale(3.6); opacity: 0; }
-        100% { transform: scale(3.6); opacity: 0; }
+        0% {
+            transform: scale(1);
+            opacity: 0.8;
+        }
+        80% {
+            transform: scale(3.6);
+            opacity: 0;
+        }
+        100% {
+            transform: scale(3.6);
+            opacity: 0;
+        }
     }
 
     /* ── Floating background glyphs (Hero) ─────────────────────────────────── */
     .hero-glyph {
         position: absolute;
-        font-family: 'JetBrains Mono', ui-monospace, monospace;
+        font-family: "JetBrains Mono", ui-monospace, monospace;
         color: rgba(96, 165, 250, 0.18);
         pointer-events: none;
         user-select: none;
@@ -85,29 +121,45 @@
     }
 
     /* ── Personal project: continuously rotating orbit rings ───────────────── */
-    .orbit-ring-slow  { animation: orbit-spin 28s linear infinite; }
-    .orbit-ring-fast  { animation: orbit-spin 18s linear infinite reverse; }
+    .orbit-ring-slow {
+        animation: orbit-spin 28s linear infinite;
+    }
+    .orbit-ring-fast {
+        animation: orbit-spin 18s linear infinite reverse;
+    }
     @keyframes orbit-spin {
-        from { transform: translate(-50%, -50%) rotate(0deg); }
-        to   { transform: translate(-50%, -50%) rotate(360deg); }
+        from {
+            transform: translate(-50%, -50%) rotate(0deg);
+        }
+        to {
+            transform: translate(-50%, -50%) rotate(360deg);
+        }
     }
     @media (pointer: coarse) {
-        .orbit-ring-slow, .orbit-ring-fast { animation-duration: 60s; }
+        .orbit-ring-slow,
+        .orbit-ring-fast {
+            animation-duration: 60s;
+        }
     }
     @media (prefers-reduced-motion: reduce) {
-        .orbit-ring-slow, .orbit-ring-fast { animation: none; transform: translate(-50%, -50%); }
+        .orbit-ring-slow,
+        .orbit-ring-fast {
+            animation: none;
+            transform: translate(-50%, -50%);
+        }
     }
 
     /* ── AI project badge: animated gradient + sparkle pulse ───────────────── */
     .ai-badge {
         position: relative;
         color: #ecfdf5;
-        background:
-                linear-gradient(120deg,
+        background: linear-gradient(
+                120deg,
                 rgba(59, 130, 246, 0.22) 0%,
                 rgba(168, 85, 247, 0.22) 35%,
                 rgba(45, 212, 191, 0.22) 70%,
-                rgba(59, 130, 246, 0.22) 100%);
+                rgba(59, 130, 246, 0.22) 100%
+        );
         background-size: 220% 220%;
         box-shadow:
                 inset 0 0 0 1px rgba(186, 230, 253, 0.28),
@@ -120,20 +172,52 @@
         filter: drop-shadow(0 0 4px rgba(125, 211, 252, 0.6));
     }
     @keyframes ai-shimmer {
-        0%, 100% { background-position: 0% 50%; }
-        50%      { background-position: 100% 50%; }
+        0%,
+        100% {
+            background-position: 0% 50%;
+        }
+        50% {
+            background-position: 100% 50%;
+        }
     }
     @keyframes ai-sparkle {
-        0%, 100% { transform: rotate(0deg) scale(1);   opacity: 0.85; }
-        50%      { transform: rotate(180deg) scale(1.15); opacity: 1; }
+        0%,
+        100% {
+            transform: rotate(0deg) scale(1);
+            opacity: 0.85;
+        }
+        50% {
+            transform: rotate(180deg) scale(1.15);
+            opacity: 1;
+        }
     }
     @media (prefers-reduced-motion: reduce) {
-        .ai-badge { animation: none; }
-        .ai-badge svg { animation: none; }
+        .ai-badge {
+            animation: none;
+        }
+        .ai-badge svg {
+            animation: none;
+        }
     }
 
     /* ── Tech marquee: continuous opposing scroll (theme blue + dark surface) ── */
-    .marquee-track { overflow: hidden; mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
+    .marquee-track {
+        overflow: hidden;
+        mask-image: linear-gradient(
+                90deg,
+                transparent,
+                #000 8%,
+                #000 92%,
+                transparent
+        );
+        -webkit-mask-image: linear-gradient(
+                90deg,
+                transparent,
+                #000 8%,
+                #000 92%,
+                transparent
+        );
+    }
     .marquee-inner {
         width: max-content;
         will-change: transform;
@@ -141,22 +225,41 @@
         animation-timing-function: linear;
         animation-iteration-count: infinite;
     }
-    .marquee-left  { animation-name: marquee-scroll-left; }
-    .marquee-right { animation-name: marquee-scroll-right; }
+    .marquee-left {
+        animation-name: marquee-scroll-left;
+    }
+    .marquee-right {
+        animation-name: marquee-scroll-right;
+    }
     @keyframes marquee-scroll-left {
-        from { transform: translate3d(0, 0, 0); }
-        to   { transform: translate3d(-33.3333%, 0, 0); }
+        from {
+            transform: translate3d(0, 0, 0);
+        }
+        to {
+            transform: translate3d(-33.3333%, 0, 0);
+        }
     }
     @keyframes marquee-scroll-right {
-        from { transform: translate3d(-33.3333%, 0, 0); }
-        to   { transform: translate3d(0, 0, 0); }
+        from {
+            transform: translate3d(-33.3333%, 0, 0);
+        }
+        to {
+            transform: translate3d(0, 0, 0);
+        }
     }
-    .marquee-track:hover .marquee-inner { animation-play-state: paused; }
+    .marquee-track:hover .marquee-inner {
+        animation-play-state: paused;
+    }
     @media (max-width: 767px) {
-        .marquee-inner { animation-duration: 32s; }
+        .marquee-inner {
+            animation-duration: 32s;
+        }
     }
     @media (prefers-reduced-motion: reduce) {
-        .marquee-inner { animation: none; transform: translate3d(-16.6%, 0, 0); }
+        .marquee-inner {
+            animation: none;
+            transform: translate3d(-16.6%, 0, 0);
+        }
     }
 
     /* ── Cursor-following spotlight on Contact heading ─────────────────────── */
@@ -180,15 +283,21 @@
         pointer-events: none;
         -webkit-mask-image: radial-gradient(
                 circle 180px at var(--mx, -200px) var(--my, -200px),
-                #000 0%, #000 30%, transparent 70%
+                #000 0%,
+                #000 30%,
+                transparent 70%
         );
         mask-image: radial-gradient(
                 circle 180px at var(--mx, -200px) var(--my, -200px),
-                #000 0%, #000 30%, transparent 70%
+                #000 0%,
+                #000 30%,
+                transparent 70%
         );
     }
     @media (pointer: coarse), (prefers-reduced-motion: reduce) {
-        [data-spotlight-text]::after { display: none; }
+        [data-spotlight-text]::after {
+            display: none;
+        }
     }
 
     /* ── Typewriter caret used by [data-typewriter] motion handler ─────────── */
@@ -203,8 +312,14 @@
         border-radius: 1px;
     }
     @keyframes tw-caret-blink {
-        0%, 49% { opacity: 1; }
-        50%, 100% { opacity: 0; }
+        0%,
+        49% {
+            opacity: 1;
+        }
+        50%,
+        100% {
+            opacity: 0;
+        }
     }
 
     /* ── Liquid glass: nearly-transparent panel with a thin gradient border ─── */
@@ -219,7 +334,7 @@
         box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.08);
     }
     .liquid-glass::before {
-        content: '';
+        content: "";
         position: absolute;
         inset: 0;
         border-radius: inherit;
@@ -287,32 +402,28 @@
         animation: blurFadeUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
 
-    /* gradient-stroke text variant — ends in cool warm-white so it never blends
-       into the blue sphere background behind it */
+    /* Solid bright text — previously used background-clip:text gradient which
+       was unreliable in production (showed as black/transparent). */
     .text-gradient-cool {
-        /* Solid light fallback — guarantees readable text if background-clip
-           is stripped by a minifier or unsupported by the browser. */
-        color: #e2e8f0;
-        background-image: linear-gradient(180deg, #f8f8f2 0%, #e2e8f0 45%, #94a3b8 100%);
-    }
-    @supports ((-webkit-background-clip: text) or (background-clip: text)) {
-        .text-gradient-cool {
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+        color: #f8f8f2 !important;
+        background: none !important;
+        -webkit-text-fill-color: #f8f8f2 !important;
+        -webkit-background-clip: border-box !important;
+        background-clip: border-box !important;
     }
 
     /* lowercase editorial label */
     .label-eyebrow {
         text-transform: lowercase;
         letter-spacing: 0.32em;
-        font-feature-settings: 'ss01';
+        font-feature-settings: "ss01";
     }
 
     /* hide-on-touch helper */
     @media (pointer: coarse) {
-        .no-touch { display: none !important; }
+        .no-touch {
+            display: none !important;
+        }
     }
 }
 
@@ -322,7 +433,10 @@
     border-top-right-radius: 40px;
 }
 @media (min-width: 768px) {
-    .section-curve { border-top-left-radius: 60px; border-top-right-radius: 60px; }
+    .section-curve {
+        border-top-left-radius: 60px;
+        border-top-right-radius: 60px;
+    }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -335,14 +449,16 @@
    Release uses iOS-style easeOutCubic (0.16, 1, 0.3, 1). */
 .tap-press {
     -webkit-tap-highlight-color: transparent;
-    transition: scale 280ms cubic-bezier(0.16, 1, 0.3, 1),
-    filter 220ms cubic-bezier(0.16, 1, 0.3, 1);
+    transition:
+            scale 280ms cubic-bezier(0.16, 1, 0.3, 1),
+            filter 220ms cubic-bezier(0.16, 1, 0.3, 1);
     will-change: scale;
 }
 .tap-press:active {
     scale: 0.965;
-    transition: scale 120ms cubic-bezier(0.32, 0.72, 0, 1),
-    filter 100ms cubic-bezier(0.32, 0.72, 0, 1);
+    transition:
+            scale 120ms cubic-bezier(0.32, 0.72, 0, 1),
+            filter 100ms cubic-bezier(0.32, 0.72, 0, 1);
 }
 /* Larger surfaces (cards) press subtler so they don't feel rubbery */
 .tap-press-soft {
@@ -365,20 +481,30 @@
     transition: scale 110ms cubic-bezier(0.32, 0.72, 0, 1);
 }
 @media (prefers-reduced-motion: reduce) {
-    .tap-press, .tap-press-soft, .tap-press-firm,
-    .tap-press:active, .tap-press-soft:active, .tap-press-firm:active {
-        scale: 1; transition: none;
+    .tap-press,
+    .tap-press-soft,
+    .tap-press-firm,
+    .tap-press:active,
+    .tap-press-soft:active,
+    .tap-press-firm:active {
+        scale: 1;
+        transition: none;
     }
 }
 
 /* Safe-area helpers — used by fixed top/bottom UI to avoid the notch /
    Dynamic Island / home indicator. */
-.safe-pt { padding-top: env(safe-area-inset-top, 0px); }
-.safe-pb { padding-bottom: env(safe-area-inset-bottom, 0px); }
+.safe-pt {
+    padding-top: env(safe-area-inset-top, 0px);
+}
+.safe-pb {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+}
 
 /* ─── iOS-style bottom sheet (mobile resume modal) ───────────────────────── */
 .ios-sheet-backdrop {
-    position: fixed; inset: 0;
+    position: fixed;
+    inset: 0;
     background: rgba(8, 8, 14, 0.62);
     -webkit-backdrop-filter: blur(14px) saturate(140%);
     backdrop-filter: blur(14px) saturate(140%);
@@ -386,42 +512,56 @@
     animation: ios-sheet-backdrop-in 360ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 @keyframes ios-sheet-backdrop-in {
-    to { opacity: 1; }
+    to {
+        opacity: 1;
+    }
 }
 .ios-sheet-panel {
     position: fixed;
-    left: 0; right: 0; bottom: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     height: min(92vh, 100dvh - env(safe-area-inset-top, 0px) - 8px);
     background: #11111a;
     border-top-left-radius: 22px;
     border-top-right-radius: 22px;
-    box-shadow: 0 -24px 80px -20px rgba(0,0,0,0.7),
-    inset 0 1px 1px rgba(255,255,255,0.08);
+    box-shadow:
+            0 -24px 80px -20px rgba(0, 0, 0, 0.7),
+            inset 0 1px 1px rgba(255, 255, 255, 0.08);
     transform: translateY(100%);
     animation: ios-sheet-in 520ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
-    display: flex; flex-direction: column;
+    display: flex;
+    flex-direction: column;
     padding-bottom: env(safe-area-inset-bottom, 0px);
     overflow: hidden;
 }
 @keyframes ios-sheet-in {
-    to { transform: translateY(0); }
+    to {
+        transform: translateY(0);
+    }
 }
 .ios-sheet-panel.is-leaving {
     animation: ios-sheet-out 280ms cubic-bezier(0.32, 0.72, 0, 1) forwards;
 }
 .ios-sheet-backdrop.is-leaving {
-    animation: ios-sheet-backdrop-out 240ms cubic-bezier(0.32, 0.72, 0, 1) forwards;
+    animation: ios-sheet-backdrop-out 240ms cubic-bezier(0.32, 0.72, 0, 1)
+    forwards;
 }
 @keyframes ios-sheet-out {
-    to { transform: translateY(100%); }
+    to {
+        transform: translateY(100%);
+    }
 }
 @keyframes ios-sheet-backdrop-out {
-    to { opacity: 0; }
+    to {
+        opacity: 0;
+    }
 }
 .ios-sheet-grabber {
-    width: 38px; height: 5px;
+    width: 38px;
+    height: 5px;
     border-radius: 999px;
-    background: rgba(255,255,255,0.22);
+    background: rgba(255, 255, 255, 0.22);
     margin: 8px auto 4px;
     flex: 0 0 auto;
 }
@@ -429,19 +569,28 @@
     .ios-sheet-backdrop,
     .ios-sheet-panel,
     .ios-sheet-panel.is-leaving,
-    .ios-sheet-backdrop.is-leaving { animation: none; opacity: 1; transform: none; }
+    .ios-sheet-backdrop.is-leaving {
+        animation: none;
+        opacity: 1;
+        transform: none;
+    }
 }
 
 /* ─── Mobile-dock sliding active indicator ───────────────────────────────── */
 .dock-slider {
     position: absolute;
-    top: 6px; bottom: 6px;
+    top: 6px;
+    bottom: 6px;
     left: 6px;
     width: 44px;
     border-radius: 9999px;
-    background: linear-gradient(180deg, rgba(59, 130, 246, 0.26) 0%, rgba(59, 130, 246, 0.14) 100%);
+    background: linear-gradient(
+            180deg,
+            rgba(59, 130, 246, 0.26) 0%,
+            rgba(59, 130, 246, 0.14) 100%
+    );
     box-shadow:
-            inset 0 1px 1px rgba(255,255,255,0.12),
+            inset 0 1px 1px rgba(255, 255, 255, 0.12),
             0 0 0 1px rgba(59, 130, 246, 0.42),
             0 8px 22px -10px rgba(59, 130, 246, 0.55);
     pointer-events: none;
@@ -452,5 +601,7 @@
     will-change: transform, width;
 }
 @media (prefers-reduced-motion: reduce) {
-    .dock-slider { transition: none; }
+    .dock-slider {
+        transition: none;
+    }
 }
