@@ -1,0 +1,29 @@
+---
+import BaseLayout from '@/components/layout/BaseLayout.astro';
+import Navbar from '@/components/ui/Navbar.astro';
+import Hero from '@/components/sections/Hero.astro';
+import About from '@/components/sections/About.astro';
+import TechStack from '@/components/sections/TechStack.astro';
+import TechMarquee from '@/components/sections/TechMarquee.astro';
+import Projects from '@/components/sections/Projects.astro';
+import Experience from '@/components/sections/Experience.astro';
+import Contact from '@/components/sections/Contact.astro';
+import CustomCursor from '@/components/ui/CustomCursor';
+import ResumeModal from '@/components/ui/ResumeModal';
+import { seo } from '@/data/site';
+---
+
+<BaseLayout title={seo.title} description={seo.description}>
+  <CustomCursor client:idle />
+  <ResumeModal client:idle />
+  <Navbar />
+  <main>
+    <Hero />
+    <About />
+    <TechStack />
+    <TechMarquee />
+    <Projects />
+    <Experience />
+    <Contact />
+  </main>
+</BaseLayout>

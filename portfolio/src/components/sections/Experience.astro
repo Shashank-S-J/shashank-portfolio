@@ -1,0 +1,99 @@
+---
+import { experience, education, certifications } from '@/data/site';
+---
+
+<section id="experience" class="relative py-20 sm:py-24 md:py-40 section-curve bg-base-surface/40 -mt-10 md:-mt-14 z-10">
+  <div class="mx-auto max-w-7xl px-6 md:px-10">
+    <div class="max-w-3xl mb-12 sm:mb-16 md:mb-20 reveal">
+      <span class="inline-block text-xs label-eyebrow text-accent mb-4">
+        04 — experience
+      </span>
+      <h2 class="font-display font-bold leading-[1.02] tracking-[-0.035em]" style="font-size: clamp(2.5rem, 6vw, 5rem);">
+        the path so far.
+      </h2>
+    </div>
+
+    <div class="grid lg:grid-cols-12 gap-10 lg:gap-16">
+      <!-- timeline -->
+      <div class="lg:col-span-8">
+        <div class="relative pl-7 md:pl-10 [perspective:1200px]">
+          <!-- vertical line -->
+          <div
+            data-timeline-line
+            class="absolute left-[7px] md:left-[11px] top-1 bottom-1 w-px bg-base-border origin-top"
+          ></div>
+
+          <div class="space-y-10 sm:space-y-12">
+            {experience.map((e) => (
+              <article data-timeline-item class="relative will-change-transform [transform-style:preserve-3d]">
+                <span
+                  data-timeline-current-dot={e.current ? '' : undefined}
+                  class:list={[
+                    'absolute -left-[27px] md:-left-[34px] top-1.5 w-3 h-3 rounded-full ring-4 ring-base-page',
+                    e.current ? 'bg-accent shadow-[0_0_18px_rgba(59,130,246,0.7)]' : 'bg-base-border'
+                  ]}
+                  aria-hidden="true"
+                ></span>
+
+                <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1 mb-3">
+                  <h3 data-typewriter class="font-display font-semibold text-xl text-ink">{e.role}</h3>
+                  {e.current && (
+                    <span class="text-[10px] font-mono uppercase tracking-wider text-accent bg-accent/10 px-2 py-0.5 rounded">
+                      current
+                    </span>
+                  )}
+                </div>
+                <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-ink-muted mb-4">
+                  <span class="font-medium text-ink">{e.company}</span>
+                  <span class="text-ink-dim">·</span>
+                  <span>{e.location}</span>
+                  <span class="text-ink-dim">·</span>
+                  <span class="font-mono text-xs">{e.duration}</span>
+                </div>
+                <ul data-bullet-list class="space-y-2.5">
+                  {e.points.map((p) => (
+                    <li data-bullet-item class="flex items-start gap-3 text-ink/90 leading-relaxed">
+                      <span data-bullet-arrow class="shrink-0 mt-[10px] inline-block w-3.5 h-[2px] rounded-full bg-accent"></span>
+                      <span>{p}</span>
+                    </li>
+                  ))}
+                </ul>
+              </article>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <!-- side: education + certs -->
+      <aside class="lg:col-span-4 space-y-6 [perspective:1200px]">
+        <div data-tilt-3d data-tilt-strength="8" class="reveal rounded-2xl bg-white/[0.025] ring-1 ring-white/[0.06] p-1.5 shadow-[0_30px_80px_-30px_rgba(0,0,0,0.6)] [transform-style:preserve-3d]">
+          <div class="rounded-[calc(1rem-0.375rem)] bg-[#0d0d14] p-5 md:p-6 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)]">
+            <h4 data-tilt-layer="14" class="text-[10px] font-mono uppercase tracking-[0.22em] text-accent mb-3">education</h4>
+            <p data-tilt-layer="20" class="font-display font-semibold text-ink">{education.degree}</p>
+            <p class="text-sm text-ink-muted mt-1">{education.institution}</p>
+            <div class="flex items-center justify-between mt-3 text-xs font-mono text-ink-dim">
+              <span>{education.duration}</span>
+            </div>
+            <p class="text-xs text-ink-muted mt-2">{education.detail}</p>
+          </div>
+        </div>
+
+        <div data-tilt-3d data-tilt-strength="8" class="reveal rounded-2xl bg-white/[0.025] ring-1 ring-white/[0.06] p-1.5 shadow-[0_30px_80px_-30px_rgba(0,0,0,0.6)] [transform-style:preserve-3d]">
+          <div class="rounded-[calc(1rem-0.375rem)] bg-[#0d0d14] p-5 md:p-6 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)]">
+            <h4 data-tilt-layer="14" class="text-[10px] font-mono uppercase tracking-[0.22em] text-accent mb-4">certifications</h4>
+            <ul class="space-y-4">
+              {certifications.map((c) => (
+                <li data-tilt-layer="10">
+                  <p class="font-medium text-ink text-sm leading-snug">{c.name}</p>
+                  <p class="text-xs text-ink-muted mt-1">
+                    {c.issuer} · <span class="font-mono">{c.issued}</span>
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>

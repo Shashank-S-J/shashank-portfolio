@@ -1,0 +1,412 @@
+---
+// ProjectPipeline.astro — Xero-inspired animated data-flow beam adapted to
+// the app's blue accent palette. Renders a 3-node pipeline (left side node →
+// neumorphic center node with project mark → right side node) connected by
+// an animated SVG beam whose linear-gradient sweeps through a 4-phase state
+// machine (p1 → splash → p2 → idle) on infinite loop.
+//
+// Behaviour & DOM hooks come from `motion.ts` — every instance is bound by
+// `data-pp-pipeline` on the inner pipeline element.
+
+interface Props {
+  title: string;
+  variant?: 'ai' | 'event';
+}
+const { title, variant = 'ai' } = Astro.props as Props;
+
+const cfg = variant === 'ai'
+  ? {
+      left:  { label: 'query',  hint: 'natural language' },
+      right: { label: 'answer', hint: 'cited · streamed' },
+      topLabel: 'rag pipeline',
+      bottomLeft: 'sse streaming · grounded',
+      // Lucide search & sparkles
+      leftIcon:  '<circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path>',
+      rightIcon: '<path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"></path><circle cx="12" cy="12" r="3"></circle>',
+    }
+  : {
+      left:  { label: 'producer', hint: 'spring boot · http' },
+      right: { label: 'consumer', hint: 'async · idempotent' },
+      topLabel: 'event flow',
+      bottomLeft: 'kafka · eureka · redis',
+      // Lucide send & inbox
+      leftIcon:  '<line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>',
+      rightIcon: '<polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path>',
+    };
+
+// Unique id for the gradient + filter so multiple instances don't collide.
+const uid = `pp${Math.random().toString(36).slice(2, 8)}`;
+
+// First non-trivial token of the title becomes the center mark, max 4 chars.
+const mark = title
+  .replace(/[—–-]/g, ' ')
+  .split(' ')
+  .find((w) => w.length >= 2) ?? title;
+const markText = mark.slice(0, 4).toUpperCase();
+---
+
+<div class="pp-card" data-pp-card>
+  <!-- radial blue arc (signature Xero look, retuned to app accent) -->
+  <div class="pp-arc" aria-hidden="true"></div>
+  <!-- crosshatch grid, only visible inside the arc via mask -->
+  <div class="pp-grid" aria-hidden="true"></div>
+
+  <!-- top status rail -->
+  <div class="pp-top">
+    <span class="pp-eyebrow">{cfg.topLabel}</span>
+    <div class="pp-dots" aria-hidden="true">
+      <span></span><span></span><span class="on"></span>
+    </div>
+  </div>
+
+  <!-- pipeline core -->
+  <div class="pp-pipeline" data-pp-pipeline data-pp-uid={uid}>
+    <svg class="pp-beam" preserveAspectRatio="none" aria-hidden="true">
+      <defs>
+        <filter id={`pp-glow-${uid}`} x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="2"></feGaussianBlur>
+        </filter>
+        <linearGradient id={`pp-beam-${uid}`} gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="20" y2="0">
+          <stop offset="0%"   stop-color="#3b82f6" stop-opacity="0"></stop>
+          <stop offset="20%"  stop-color="#3b82f6" stop-opacity="0.85"></stop>
+          <stop offset="50%"  stop-color="#ffffff" stop-opacity="1"></stop>
+          <stop offset="80%"  stop-color="#7dd3fc" stop-opacity="0.85"></stop>
+          <stop offset="100%" stop-color="#7dd3fc" stop-opacity="0"></stop>
+        </linearGradient>
+      </defs>
+      <path data-pp-beam-glow stroke={`url(#pp-beam-${uid})`} stroke-width="2.5" filter={`url(#pp-glow-${uid})`} opacity="0.6" fill="none" stroke-linecap="round" d=""></path>
+      <path data-pp-beam-core stroke={`url(#pp-beam-${uid})`} stroke-width="1.1" fill="none" stroke-linecap="round" d=""></path>
+    </svg>
+
+    <!-- left side node -->
+    <div class="pp-node pp-node-side pp-node-light-right" data-pp-node-left aria-label={cfg.left.label}>
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" set:html={cfg.leftIcon} />
+    </div>
+
+    <span class="pp-line" aria-hidden="true"></span>
+
+    <!-- center wrapper with splash + neumorphic core node -->
+    <div class="pp-center-wrap">
+      <span class="pp-splash" data-pp-splash aria-hidden="true"></span>
+      <div class="pp-node-center" data-pp-node-center>
+        <span class="pp-mark">{markText}</span>
+      </div>
+    </div>
+
+    <span class="pp-line" aria-hidden="true"></span>
+
+    <!-- right side node -->
+    <div class="pp-node pp-node-side pp-node-light-left" data-pp-node-right aria-label={cfg.right.label}>
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" set:html={cfg.rightIcon} />
+    </div>
+  </div>
+
+  <!-- stage labels under the pipeline -->
+  <div class="pp-stage-labels">
+    <div class="pp-stage">
+      <div class="pp-stage-label">{cfg.left.label}</div>
+      <div class="pp-stage-hint">{cfg.left.hint}</div>
+    </div>
+    <div class="pp-stage pp-stage-center">
+      <div class="pp-stage-label">{title}</div>
+      <div class="pp-stage-hint">core engine</div>
+    </div>
+    <div class="pp-stage pp-stage-right">
+      <div class="pp-stage-label">{cfg.right.label}</div>
+      <div class="pp-stage-hint">{cfg.right.hint}</div>
+    </div>
+  </div>
+
+  <!-- bottom status bar -->
+  <div class="pp-bottom">
+    <span class="pp-bottom-l">{cfg.bottomLeft}</span>
+    <span class="pp-bottom-r"><span class="pp-pulse"></span> healthy</span>
+  </div>
+</div>
+
+<style>
+  .pp-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: 24px;
+    background: #0a0a10;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    padding: 18px 18px 14px;
+    min-height: 280px;
+    display: flex;
+    flex-direction: column;
+    isolation: isolate;
+  }
+
+  /* ── signature radial arc — adapted from Xero pink → app accent blue ──── */
+  .pp-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(circle at 50% -60%,
+        transparent 60%,
+        rgba(59, 130, 246, 0.04) 63%,
+        rgba(59, 130, 246, 0.10) 65%,
+        rgba(59, 130, 246, 0.18) 67%,
+        rgba(59, 130, 246, 0.30) 69%,
+        rgba(59, 130, 246, 0.42) 71%,
+        rgba(96, 165, 250, 0.55) 73%,
+        rgba(125, 211, 252, 0.70) 75%,
+        rgba(186, 230, 253, 0.82) 78%,
+        rgba(224, 242, 254, 0.92) 82%,
+        rgba(255, 255, 255, 0.98) 88%,
+        #ffffff 92%),
+      radial-gradient(circle at 50% 38%, rgba(59, 130, 246, 0.10) 0%, transparent 55%);
+  }
+
+  /* ── crosshatch grid — visible only inside the arc area via mask ──────── */
+  .pp-grid {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+    background-size: 32px 32px;
+    -webkit-mask-image: radial-gradient(circle at 50% -60%, transparent 60%, black 80%);
+            mask-image: radial-gradient(circle at 50% -60%, transparent 60%, black 80%);
+    opacity: 0.7;
+  }
+
+  .pp-top {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 22px;
+  }
+  .pp-eyebrow {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    color: #94a3b8;
+  }
+  .pp-dots { display: flex; gap: 4px; }
+  .pp-dots span {
+    width: 6px; height: 6px; border-radius: 999px; background: rgba(255, 255, 255, 0.15);
+  }
+  .pp-dots span.on { background: rgba(59, 130, 246, 0.8); box-shadow: 0 0 8px rgba(59, 130, 246, 0.6); }
+
+  /* ── PIPELINE LAYOUT ──────────────────────────────────────────────────── */
+  .pp-pipeline {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    margin: 8px 0 24px;
+    min-height: 96px;
+  }
+  .pp-beam {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: none;
+    z-index: 2;
+  }
+  .pp-line {
+    flex: 0 1 100px;
+    height: 1px;
+    max-width: 120px;
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.06));
+    z-index: 1;
+  }
+
+  /* ── SIDE NODE (left & right) ─────────────────────────────────────────── */
+  .pp-node {
+    position: relative;
+    width: 46px;
+    height: 46px;
+    flex: 0 0 46px;
+    border-radius: 999px;
+    background: #161620;
+    display: grid;
+    place-items: center;
+    color: rgba(255, 255, 255, 0.78);
+    z-index: 3;
+    cursor: default;
+    box-shadow:
+      6px 6px 12px rgba(0, 0, 0, 0.45),
+      -4px -4px 10px rgba(255, 255, 255, 0.03),
+      inset 1px 1px 1px rgba(255, 255, 255, 0.05),
+      inset 4px 4px 8px rgba(0, 0, 0, 0.45);
+    transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1), box-shadow 0.4s ease;
+  }
+  .pp-node::after {
+    content: '';
+    position: absolute;
+    inset: -7px;
+    border-radius: 999px;
+    border: 1px dotted rgba(148, 163, 184, 0.4);
+    pointer-events: none;
+  }
+  .pp-node::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 999px;
+    background: radial-gradient(circle at right, rgba(59, 130, 246, 0.55) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    z-index: -1;
+  }
+  .pp-node-light-left::before {
+    background: radial-gradient(circle at left, rgba(125, 211, 252, 0.6) 0%, transparent 70%);
+  }
+  .pp-node.active::before { opacity: 1; }
+  .pp-node.active {
+    transform: translateY(-1px);
+    box-shadow:
+      8px 8px 16px rgba(0, 0, 0, 0.55),
+      -4px -4px 12px rgba(125, 211, 252, 0.08),
+      inset 1px 1px 1px rgba(255, 255, 255, 0.08),
+      inset 4px 4px 8px rgba(0, 0, 0, 0.5);
+  }
+
+  /* ── CENTER NODE — bigger, deeper neumorphic, shows project mark ──────── */
+  .pp-center-wrap {
+    position: relative;
+    display: grid;
+    place-items: center;
+    z-index: 3;
+  }
+  .pp-node-center {
+    position: relative;
+    width: 68px;
+    height: 68px;
+    border-radius: 999px;
+    background: linear-gradient(145deg, #1e1e2c, #15151e);
+    display: grid;
+    place-items: center;
+    z-index: 3;
+    box-shadow:
+      8px 8px 18px rgba(0, 0, 0, 0.55),
+      -6px -6px 16px rgba(255, 255, 255, 0.04),
+      inset 1px 1px 2px rgba(255, 255, 255, 0.08),
+      inset 6px 6px 14px rgba(0, 0, 0, 0.55),
+      0 0 0 1px rgba(96, 165, 250, 0.18);
+  }
+  .pp-mark {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', system-ui, sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: -0.01em;
+    background: linear-gradient(180deg, #ffffff 0%, #93c5fd 100%);
+    -webkit-background-clip: text;
+            background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .pp-splash {
+    position: absolute;
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(96, 165, 250, 0.7) 0%, rgba(59, 130, 246, 0.3) 40%, transparent 70%);
+    opacity: 0;
+    transform: scale(0.4);
+    pointer-events: none;
+    z-index: 2;
+  }
+  .pp-splash.fire { animation: pp-splash-burst 0.8s ease-out forwards; }
+  @keyframes pp-splash-burst {
+    0%   { transform: scale(0.4); opacity: 0.85; }
+    40%  { opacity: 0.55; }
+    100% { transform: scale(1.6); opacity: 0; }
+  }
+
+  /* ── STAGE LABELS ─────────────────────────────────────────────────────── */
+  .pp-stage-labels {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    text-align: center;
+    margin-bottom: 16px;
+  }
+  .pp-stage-label {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #cbd5e1;
+  }
+  .pp-stage-center .pp-stage-label {
+    color: #ffffff;
+    font-size: 11px;
+  }
+  .pp-stage-hint {
+    font-family: inherit;
+    font-size: 10px;
+    color: #94a3b8;
+    margin-top: 4px;
+    line-height: 1.3;
+  }
+  .pp-stage-right { text-align: right; }
+  .pp-stage:first-child { text-align: left; }
+
+  /* ── BOTTOM STATUS BAR ────────────────────────────────────────────────── */
+  .pp-bottom {
+    position: relative;
+    z-index: 2;
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 14px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+  .pp-bottom-l { color: #94a3b8; }
+  .pp-bottom-r { color: #6ee7b7; display: inline-flex; align-items: center; gap: 6px; }
+  .pp-pulse {
+    width: 6px; height: 6px; border-radius: 999px; background: #34d399;
+    box-shadow: 0 0 10px rgba(52, 211, 153, 0.7);
+    animation: pp-pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes pp-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%      { opacity: 0.5; transform: scale(0.85); }
+  }
+
+  /* ── RESPONSIVE ───────────────────────────────────────────────────────── */
+  @media (max-width: 768px) {
+    .pp-card { padding: 20px 16px 18px; min-height: 320px; }
+    .pp-node { width: 40px; height: 40px; flex-basis: 40px; }
+    .pp-node-center { width: 58px; height: 58px; }
+    .pp-mark { font-size: 11px; }
+    .pp-splash { width: 92px; height: 92px; }
+    .pp-line { max-width: 64px; flex-basis: 64px; }
+    .pp-stage-label { font-size: 9px; }
+    .pp-stage-hint { font-size: 9px; }
+  }
+  @media (max-width: 420px) {
+    .pp-line { max-width: 40px; flex-basis: 40px; }
+    .pp-stage-hint { display: none; }
+  }
+
+  /* Reduce motion */
+  @media (prefers-reduced-motion: reduce) {
+    .pp-splash.fire { animation: none; }
+    .pp-pulse { animation: none; }
+    .pp-node { transition: none; }
+  }
+</style>

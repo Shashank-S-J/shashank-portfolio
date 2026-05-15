@@ -1,0 +1,450 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+  html {
+    scroll-behavior: smooth;
+    /* Apple-style tap reset: no 300ms delay, no gray flash on iOS */
+    -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+  body {
+    background-color: #0a0a0f;
+    color: #f8f8f2;
+    overflow-x: hidden;
+    /* Prevent rubber-band white flash on iOS; keep one-direction scroll fluid */
+    overscroll-behavior-y: none;
+    /* Remove the 300ms tap delay on touch devices, allow pinch-zoom */
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    /* Apple-style typography: SF on iOS/macOS, system UI font elsewhere */
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display',
+                 'Helvetica Neue', 'Segoe UI', Roboto, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: 'ss01', 'cv11', 'kern';
+    letter-spacing: -0.011em;
+  }
+  /* SF Pro Display is auto-selected at large sizes on Apple devices via the
+     -apple-system stack; tighten optical tracking for big headings. */
+  h1, h2, h3, .font-display {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text',
+                 'Helvetica Neue', 'Segoe UI', Roboto, system-ui, sans-serif;
+    letter-spacing: -0.022em;
+  }
+  /* Tabular numerals for stats / counters / timestamps */
+  [data-tabular], .tabular-nums, .font-mono { font-variant-numeric: tabular-nums; }
+  /* Reserve space at the bottom for the mobile dock nav (md- only). */
+  @media (max-width: 767px) {
+    body { padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px)); }
+  }
+  /* Any tappable element should never show the iOS gray tap flash */
+  a, button, [role='button'], [data-magnetic], [data-haptic], .tap-press {
+    -webkit-tap-highlight-color: transparent;
+  }
+  ::-webkit-scrollbar { width: 10px; }
+  ::-webkit-scrollbar-track { background: #0a0a0f; }
+  ::-webkit-scrollbar-thumb { background: #26262f; border-radius: 8px; }
+  ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+}
+
+@layer components {
+  /* ── Pulsing ripple rings on the current timeline dot ──────────────────── */
+  [data-timeline-current-dot]::before,
+  [data-timeline-current-dot]::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 1px solid rgba(59, 130, 246, 0.55);
+    pointer-events: none;
+    animation: tl-ripple 2.4s cubic-bezier(0.22, 0.61, 0.36, 1) infinite;
+  }
+  [data-timeline-current-dot]::after { animation-delay: 1.2s; }
+  @keyframes tl-ripple {
+    0%   { transform: scale(1);   opacity: 0.8; }
+    80%  { transform: scale(3.6); opacity: 0; }
+    100% { transform: scale(3.6); opacity: 0; }
+  }
+
+  /* ── Floating background glyphs (Hero) ─────────────────────────────────── */
+  .hero-glyph {
+    position: absolute;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    color: rgba(96, 165, 250, 0.18);
+    pointer-events: none;
+    user-select: none;
+    will-change: transform;
+    text-shadow: 0 0 24px rgba(59, 130, 246, 0.18);
+  }
+
+  /* ── Personal project: continuously rotating orbit rings ───────────────── */
+  .orbit-ring-slow  { animation: orbit-spin 28s linear infinite; }
+  .orbit-ring-fast  { animation: orbit-spin 18s linear infinite reverse; }
+  @keyframes orbit-spin {
+    from { transform: translate(-50%, -50%) rotate(0deg); }
+    to   { transform: translate(-50%, -50%) rotate(360deg); }
+  }
+  @media (pointer: coarse) {
+    .orbit-ring-slow, .orbit-ring-fast { animation-duration: 60s; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .orbit-ring-slow, .orbit-ring-fast { animation: none; transform: translate(-50%, -50%); }
+  }
+
+  /* ── AI project badge: animated gradient + sparkle pulse ───────────────── */
+  .ai-badge {
+    position: relative;
+    color: #ecfdf5;
+    background:
+      linear-gradient(120deg,
+        rgba(59, 130, 246, 0.22) 0%,
+        rgba(168, 85, 247, 0.22) 35%,
+        rgba(45, 212, 191, 0.22) 70%,
+        rgba(59, 130, 246, 0.22) 100%);
+    background-size: 220% 220%;
+    box-shadow:
+      inset 0 0 0 1px rgba(186, 230, 253, 0.28),
+      0 0 24px -6px rgba(59, 130, 246, 0.45);
+    animation: ai-shimmer 6s ease-in-out infinite;
+  }
+  .ai-badge svg {
+    color: #7dd3fc;
+    animation: ai-sparkle 3.2s ease-in-out infinite;
+    filter: drop-shadow(0 0 4px rgba(125, 211, 252, 0.6));
+  }
+  @keyframes ai-shimmer {
+    0%, 100% { background-position: 0% 50%; }
+    50%      { background-position: 100% 50%; }
+  }
+  @keyframes ai-sparkle {
+    0%, 100% { transform: rotate(0deg) scale(1);   opacity: 0.85; }
+    50%      { transform: rotate(180deg) scale(1.15); opacity: 1; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ai-badge { animation: none; }
+    .ai-badge svg { animation: none; }
+  }
+
+  /* ── Tech marquee: continuous opposing scroll (theme blue + dark surface) ── */
+  .marquee-track { overflow: hidden; mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
+  .marquee-inner {
+    width: max-content;
+    will-change: transform;
+    animation-duration: 42s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+  }
+  .marquee-left  { animation-name: marquee-scroll-left; }
+  .marquee-right { animation-name: marquee-scroll-right; }
+  @keyframes marquee-scroll-left {
+    from { transform: translate3d(0, 0, 0); }
+    to   { transform: translate3d(-33.3333%, 0, 0); }
+  }
+  @keyframes marquee-scroll-right {
+    from { transform: translate3d(-33.3333%, 0, 0); }
+    to   { transform: translate3d(0, 0, 0); }
+  }
+  .marquee-track:hover .marquee-inner { animation-play-state: paused; }
+  @media (max-width: 767px) {
+    .marquee-inner { animation-duration: 32s; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .marquee-inner { animation: none; transform: translate3d(-16.6%, 0, 0); }
+  }
+
+  /* ── Cursor-following spotlight on Contact heading ─────────────────────── */
+  [data-spotlight-text] {
+    position: relative;
+    isolation: isolate;
+  }
+  [data-spotlight-text]::after {
+    content: attr(data-spotlight-text);
+    position: absolute;
+    inset: 0;
+    /* match the heading typography exactly so the overlay aligns */
+    font: inherit;
+    letter-spacing: inherit;
+    line-height: inherit;
+    text-align: inherit;
+    background: linear-gradient(180deg, #60a5fa 0%, #93c5fd 60%, #ffffff 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    pointer-events: none;
+    -webkit-mask-image: radial-gradient(
+      circle 180px at var(--mx, -200px) var(--my, -200px),
+      #000 0%, #000 30%, transparent 70%
+    );
+    mask-image: radial-gradient(
+      circle 180px at var(--mx, -200px) var(--my, -200px),
+      #000 0%, #000 30%, transparent 70%
+    );
+  }
+  @media (pointer: coarse), (prefers-reduced-motion: reduce) {
+    [data-spotlight-text]::after { display: none; }
+  }
+
+  /* ── Typewriter caret used by [data-typewriter] motion handler ─────────── */
+  .tw-caret {
+    display: inline-block;
+    width: 0.55em;
+    height: 1em;
+    margin-left: 2px;
+    background: #3b82f6;
+    vertical-align: -0.12em;
+    animation: tw-caret-blink 1.05s steps(1) infinite;
+    border-radius: 1px;
+  }
+  @keyframes tw-caret-blink {
+    0%, 49% { opacity: 1; }
+    50%, 100% { opacity: 0; }
+  }
+
+  /* ── Liquid glass: nearly-transparent panel with a thin gradient border ─── */
+  .liquid-glass {
+    position: relative;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.015);
+    background-blend-mode: luminosity;
+    -webkit-backdrop-filter: blur(8px) saturate(140%);
+    backdrop-filter: blur(8px) saturate(140%);
+    border: none;
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.08);
+  }
+  .liquid-glass::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1.4px;
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.5) 0%,
+      rgba(255, 255, 255, 0.15) 20%,
+      rgba(255, 255, 255, 0) 40%,
+      rgba(255, 255, 255, 0) 60%,
+      rgba(255, 255, 255, 0.15) 80%,
+      rgba(255, 255, 255, 0.5) 100%
+    );
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  /* accent-tinted variant — for primary CTAs */
+  .liquid-glass-accent {
+    background: rgba(59, 130, 246, 0.08);
+  }
+  .liquid-glass-accent::before {
+    background: linear-gradient(
+      180deg,
+      rgba(96, 165, 250, 0.85) 0%,
+      rgba(59, 130, 246, 0.35) 35%,
+      rgba(59, 130, 246, 0.1) 60%,
+      rgba(96, 165, 250, 0.85) 100%
+    );
+  }
+
+  /* ── Diagonal divider line (Securify-style stat blocks) ────────────────── */
+  .diagonal-divider {
+    display: block;
+    height: 1px;
+    width: 4rem;
+    background: rgba(248, 248, 242, 0.4);
+    transform: rotate(20deg);
+  }
+  .diagonal-divider--rev {
+    transform: rotate(-20deg);
+  }
+}
+
+@layer utilities {
+  /* ── Blur-fade-up entrance ─────────────────────────────────────────────── */
+  @keyframes blurFadeUp {
+    from {
+      opacity: 0;
+      filter: blur(20px);
+      transform: translateY(40px);
+    }
+    to {
+      opacity: 1;
+      filter: blur(0);
+      transform: translateY(0);
+    }
+  }
+  .blur-fade-up {
+    opacity: 0;
+    animation: blurFadeUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  /* gradient-stroke text variant — ends in cool warm-white so it never blends
+     into the blue sphere background behind it */
+  .text-gradient-cool {
+    background: linear-gradient(180deg, #f8f8f2 0%, #e2e8f0 45%, #94a3b8 100%);
+    -webkit-background-clip: text;
+            background-clip: text;
+    -webkit-text-fill-color: transparent;
+            color: transparent;
+  }
+
+  /* lowercase editorial label */
+  .label-eyebrow {
+    text-transform: lowercase;
+    letter-spacing: 0.32em;
+    font-feature-settings: 'ss01';
+  }
+
+  /* hide-on-touch helper */
+  @media (pointer: coarse) {
+    .no-touch { display: none !important; }
+  }
+}
+
+/* Section-curve helper: dark→tinted with negative-overlap rounded top */
+.section-curve {
+  border-top-left-radius: 40px;
+  border-top-right-radius: 40px;
+}
+@media (min-width: 768px) {
+  .section-curve { border-top-left-radius: 60px; border-top-right-radius: 60px; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Apple-style mobile interaction layer
+   ─────────────────────────────────────────────────────────────────────────── */
+
+/* .tap-press — universal Apple-style press feedback.
+   Uses the standalone `scale` property so it composes with any inline / JS
+   `transform` (magnetic, tilts, etc.) instead of clobbering them.
+   Release uses iOS-style easeOutCubic (0.16, 1, 0.3, 1). */
+.tap-press {
+  -webkit-tap-highlight-color: transparent;
+  transition: scale 280ms cubic-bezier(0.16, 1, 0.3, 1),
+              filter 220ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: scale;
+}
+.tap-press:active {
+  scale: 0.965;
+  transition: scale 120ms cubic-bezier(0.32, 0.72, 0, 1),
+              filter 100ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+/* Larger surfaces (cards) press subtler so they don't feel rubbery */
+.tap-press-soft {
+  -webkit-tap-highlight-color: transparent;
+  transition: scale 320ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: scale;
+}
+.tap-press-soft:active {
+  scale: 0.985;
+  transition: scale 140ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+/* Tiny pills / icon buttons can press a touch more */
+.tap-press-firm {
+  -webkit-tap-highlight-color: transparent;
+  transition: scale 260ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: scale;
+}
+.tap-press-firm:active {
+  scale: 0.92;
+  transition: scale 110ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .tap-press, .tap-press-soft, .tap-press-firm,
+  .tap-press:active, .tap-press-soft:active, .tap-press-firm:active {
+    scale: 1; transition: none;
+  }
+}
+
+/* Safe-area helpers — used by fixed top/bottom UI to avoid the notch /
+   Dynamic Island / home indicator. */
+.safe-pt { padding-top: env(safe-area-inset-top, 0px); }
+.safe-pb { padding-bottom: env(safe-area-inset-bottom, 0px); }
+
+/* ─── iOS-style bottom sheet (mobile resume modal) ───────────────────────── */
+.ios-sheet-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(8, 8, 14, 0.62);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+          backdrop-filter: blur(14px) saturate(140%);
+  opacity: 0;
+  animation: ios-sheet-backdrop-in 360ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes ios-sheet-backdrop-in {
+  to { opacity: 1; }
+}
+.ios-sheet-panel {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  height: min(92vh, 100dvh - env(safe-area-inset-top, 0px) - 8px);
+  background: #11111a;
+  border-top-left-radius: 22px;
+  border-top-right-radius: 22px;
+  box-shadow: 0 -24px 80px -20px rgba(0,0,0,0.7),
+              inset 0 1px 1px rgba(255,255,255,0.08);
+  transform: translateY(100%);
+  animation: ios-sheet-in 520ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  display: flex; flex-direction: column;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  overflow: hidden;
+}
+@keyframes ios-sheet-in {
+  to { transform: translateY(0); }
+}
+.ios-sheet-panel.is-leaving {
+  animation: ios-sheet-out 280ms cubic-bezier(0.32, 0.72, 0, 1) forwards;
+}
+.ios-sheet-backdrop.is-leaving {
+  animation: ios-sheet-backdrop-out 240ms cubic-bezier(0.32, 0.72, 0, 1) forwards;
+}
+@keyframes ios-sheet-out {
+  to { transform: translateY(100%); }
+}
+@keyframes ios-sheet-backdrop-out {
+  to { opacity: 0; }
+}
+.ios-sheet-grabber {
+  width: 38px; height: 5px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.22);
+  margin: 8px auto 4px;
+  flex: 0 0 auto;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ios-sheet-backdrop,
+  .ios-sheet-panel,
+  .ios-sheet-panel.is-leaving,
+  .ios-sheet-backdrop.is-leaving { animation: none; opacity: 1; transform: none; }
+}
+
+/* ─── Mobile-dock sliding active indicator ───────────────────────────────── */
+.dock-slider {
+  position: absolute;
+  top: 6px; bottom: 6px;
+  left: 6px;
+  width: 44px;
+  border-radius: 9999px;
+  background: linear-gradient(180deg, rgba(59, 130, 246, 0.26) 0%, rgba(59, 130, 246, 0.14) 100%);
+  box-shadow:
+    inset 0 1px 1px rgba(255,255,255,0.12),
+    0 0 0 1px rgba(59, 130, 246, 0.42),
+    0 8px 22px -10px rgba(59, 130, 246, 0.55);
+  pointer-events: none;
+  transition:
+    transform 520ms cubic-bezier(0.32, 0.72, 0, 1),
+    width 520ms cubic-bezier(0.32, 0.72, 0, 1);
+  z-index: 0;
+  will-change: transform, width;
+}
+@media (prefers-reduced-motion: reduce) {
+  .dock-slider { transition: none; }
+}

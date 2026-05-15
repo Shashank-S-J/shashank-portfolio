@@ -1,0 +1,120 @@
+---
+import { personal, stats } from '@/data/site';
+
+const icons: { d: string }[] = [
+  { d: 'M12 2l3 7h7l-5.5 4.2L18 21l-6-4-6 4 1.5-7.8L2 9h7z' }, // star → years
+  { d: 'M4 7h16M4 12h16M4 17h10' },                              // lines → records
+  { d: 'M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z' }, // ring → uptime
+  { d: 'M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z' },   // grid → coverage
+  { d: 'M3 12h3l3-8 4 16 3-8h5' },                                // pulse → latency
+  { d: 'M5 12l5 5L20 7' },                                        // check → deploys
+];
+---
+
+<section id="about" class="relative py-20 sm:py-24 md:py-40 overflow-hidden">
+  <!-- ambient floating glow -->
+  <div class="pointer-events-none absolute -top-32 -left-32 w-[520px] h-[520px] rounded-full opacity-40 blur-[140px] bg-[radial-gradient(circle,rgba(59,130,246,0.18),transparent_70%)]" data-float></div>
+  <div class="pointer-events-none absolute bottom-0 -right-40 w-[600px] h-[600px] rounded-full opacity-30 blur-[160px] bg-[radial-gradient(circle,rgba(96,165,250,0.14),transparent_70%)]" data-float style="animation-delay:-4s"></div>
+
+  <div class="relative mx-auto max-w-7xl px-6 md:px-10">
+    <!-- header band -->
+    <div class="max-w-4xl mb-12 sm:mb-16 md:mb-20">
+      <span class="inline-block text-xs label-eyebrow text-accent mb-5">
+        01 — about
+      </span>
+      <h2
+        data-blur-words
+        class="font-display font-bold leading-[0.95] tracking-[-0.04em]"
+        style="font-size: clamp(2.4rem, 6vw, 5rem);"
+      >
+        i build backends that <span class="text-gradient-cool">don't wake people up at 3 am.</span>
+      </h2>
+    </div>
+
+    <div class="grid lg:grid-cols-12 gap-10 lg:gap-16 items-start">
+      <!-- left: bio + currently at -->
+      <div class="lg:col-span-6 reveal">
+        <div class="inline-flex items-center gap-2.5 liquid-glass rounded-full px-3.5 py-1.5 mb-6">
+          <span class="relative flex h-2 w-2">
+            <span class="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-70 animate-ping"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
+          </span>
+          <span class="text-[11px] font-mono text-ink/90">currently @ happiest minds · bengaluru</span>
+        </div>
+
+        <div class="space-y-5 text-white text-base md:text-lg leading-relaxed max-w-xl">
+          <p>{personal.bio}</p>
+          <p>{personal.longBio}</p>
+        </div>
+
+        <div class="mt-7 flex flex-wrap gap-2">
+          {['Java', 'Spring Boot', 'AWS', 'Kafka', 'FHIR R4', 'Terraform'].map((t) => (
+            <span class="text-[11px] font-mono text-ink/85 liquid-glass rounded-full px-3 py-1">
+              {t}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <!-- right: stat grid (cinematic, animated counters) -->
+      <div class="lg:col-span-6">
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4 [perspective:1200px]">
+          {stats.map((s, i) => (
+            <div
+              data-stat-card
+              data-tilt-3d
+              data-tilt-strength="12"
+              class="relative overflow-hidden rounded-2xl bg-white/[0.025] ring-1 ring-white/[0.06] p-4 md:p-5 group cursor-default transition-[box-shadow] duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:ring-white/[0.14] shadow-[inset_0_1px_1px_rgba(255,255,255,0.04)] [transform-style:preserve-3d]"
+              style={`--i:${i}`}
+            >
+              <!-- top: icon + index -->
+              <div class="flex items-start justify-between mb-4 md:mb-6">
+                <span
+                  data-tilt-layer="36"
+                  class="w-8 h-8 grid place-items-center rounded-lg bg-white/[0.04] ring-1 ring-white/[0.08] text-accent"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d={icons[i % icons.length].d}/>
+                  </svg>
+                </span>
+                <span class="text-[9px] font-mono uppercase tracking-[0.18em] text-ink-dim">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+              </div>
+
+              <!-- number -->
+              <div
+                data-stat-value={s.value}
+                data-stat-roll={s.value}
+                data-tilt-layer="24"
+                class="font-display font-bold text-ink leading-none tracking-tight tabular-nums"
+                style="font-size: clamp(1.6rem, 3vw, 2.6rem);"
+              >
+                {s.value}
+              </div>
+
+              <!-- label -->
+              <div data-tilt-layer="12" class="text-[11px] md:text-xs text-ink-muted mt-2 leading-snug">
+                {s.label.toLowerCase()}
+              </div>
+
+              <!-- accent gradient -->
+              <div class="pointer-events-none absolute -bottom-12 -right-12 w-32 h-32 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-[radial-gradient(circle,rgba(59,130,246,0.25),transparent_70%)]"></div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  @keyframes floatOrb {
+    0%, 100% { transform: translate3d(0, 0, 0); }
+    50%      { transform: translate3d(20px, -30px, 0); }
+  }
+  [data-float] { animation: floatOrb 12s ease-in-out infinite; }
+  @media (prefers-reduced-motion: reduce) {
+    [data-float] { animation: none; }
+  }
+</style>

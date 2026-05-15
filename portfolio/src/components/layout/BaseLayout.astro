@@ -1,0 +1,92 @@
+---
+import '@/styles/global.css';
+import { seo, personal } from '@/data/site';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = seo.title,
+  description = seo.description,
+} = Astro.props;
+
+const canonical = seo.url;
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: personal.name,
+  jobTitle: personal.title,
+  email: `mailto:${personal.email}`,
+  url: canonical,
+  sameAs: [personal.github, personal.linkedin],
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: 'Bengaluru',
+    addressCountry: 'IN',
+  },
+  knowsAbout: ['Java', 'Spring Boot', 'AWS', 'Microservices', 'Kafka', 'FHIR', 'Terraform'],
+};
+---
+
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#0a0a0f" />
+    <meta name="keywords" content={seo.keywords.join(', ')} />
+    <meta name="author" content={personal.name} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={seo.ogImage} />
+    <meta property="og:locale" content="en_IN" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={seo.ogImage} />
+
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
+    <title>{title}</title>
+  </head>
+  <body class="bg-base-page text-ink font-sans antialiased selection:bg-accent/30 selection:text-ink">
+    <!-- preloader -->
+    <div
+      data-preloader
+      class="fixed inset-0 z-[200] grid place-items-center bg-base-page"
+    >
+      <div class="flex flex-col items-center gap-4">
+        <span class="grid place-items-center w-16 h-16 rounded-2xl bg-base-card border border-base-border font-display font-bold text-2xl text-accent animate-glow">
+          SJ
+        </span>
+        <span class="text-xs uppercase tracking-[0.3em] text-ink-dim">loading</span>
+      </div>
+    </div>
+
+    <!-- scroll progress -->
+    <div class="fixed top-0 inset-x-0 z-[60] h-[2px] bg-transparent pointer-events-none">
+      <div
+        data-scroll-progress
+        class="h-full bg-accent origin-left scale-x-0 will-change-transform"
+        style="box-shadow: 0 0 12px rgba(59,130,246,0.6);"
+      ></div>
+    </div>
+
+    <slot />
+
+    <script>
+      import '@/scripts/motion.ts';
+    </script>
+  </body>
+</html>

@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <radialGradient id="g" cx="50%" cy="0%" r="80%">
+      <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.35"/>
+      <stop offset="60%" stop-color="#0a0a0f" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="t" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f8f8f2"/>
+      <stop offset="100%" stop-color="#3b82f6"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="#0a0a0f"/>
+  <rect width="1200" height="630" fill="url(#g)"/>
+  <g font-family="Sora, Inter, system-ui, sans-serif">
+    <text x="80" y="170" font-size="28" fill="#3b82f6" letter-spacing="6" font-weight="600">BACKEND  ·  JAVA  ·  AWS</text>
+    <text x="80" y="320" font-size="112" font-weight="700" fill="#f8f8f2" letter-spacing="-3">Shashank S J</text>
+    <text x="80" y="430" font-size="64" font-weight="700" fill="url(#t)" letter-spacing="-1.5">Backend Software Engineer</text>
+    <text x="80" y="540" font-size="26" fill="#9ca3af">Spring Boot · FHIR · Kafka · AWS EKS · Terraform  ·  Bengaluru</text>
+  </g>
+  <g transform="translate(1020,80)">
+    <rect width="100" height="100" rx="22" fill="#13131a" stroke="#26262f"/>
+    <text x="50" y="68" text-anchor="middle" font-family="Sora, Inter, sans-serif" font-weight="700" font-size="46" fill="#3b82f6">SJ</text>
+  </g>
+</svg>

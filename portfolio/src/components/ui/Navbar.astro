@@ -1,0 +1,309 @@
+---
+import { navLinks, personal } from '@/data/site';
+
+/* Bottom dock uses an expand-on-active pattern (iOS-like).
+   Each section maps to an inline SVG so the dock works without external assets. */
+const navIcons: Record<string, string> = {
+  '#about':      '<circle cx="12" cy="8" r="3.4"/><path d="M4.5 20c0-3.7 3.5-6 7.5-6s7.5 2.3 7.5 6"/>',
+  '#stack':      '<path d="M12 3 3 7l9 4 9-4-9-4Z"/><path d="m3 12 9 4 9-4"/><path d="m3 17 9 4 9-4"/>',
+  '#projects':   '<path d="M3 7h6l2 2h10v11H3Z"/><path d="M3 7V5h6l2 2"/>',
+  '#experience': '<rect x="5" y="7" width="14" height="13" rx="1.5"/><path d="M9 7V4h6v3"/><path d="M3 13h18"/>',
+  '#contact':    '<rect x="4" y="6" width="16" height="12" rx="1.5"/><path d="m4 7 8 7 8-7"/>',
+};
+---
+
+<!-- ─── TOP BAR ─────────────────────────────────────────────────────────────── -->
+<header
+  class="fixed top-0 inset-x-0 z-50 transition-all duration-300"
+  style="padding-top: env(safe-area-inset-top, 0px);"
+  data-nav
+>
+  <div
+    data-nav-inner
+    class="mx-auto max-w-7xl flex items-center justify-between gap-3 px-4 sm:px-6 md:px-10 pt-3 sm:pt-4 md:pt-6"
+  >
+    <!-- LEFT: brand pill -->
+    <a
+      href="#top"
+      class="liquid-glass tap-press flex items-center gap-2 sm:gap-2.5 rounded-full pl-1.5 sm:pl-2 pr-3.5 sm:pr-5 h-10 sm:h-11 group"
+      aria-label={`${personal.name} home`}
+      data-magnetic
+    >
+      <span
+        class="grid place-items-center w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-accent/15 border border-accent/40 font-display font-bold text-accent text-xs sm:text-sm group-hover:bg-accent group-hover:text-[#0a0a0f] transition-colors"
+      >
+        {personal.initials}
+      </span>
+      <span class="font-display font-semibold tracking-tight text-[13px] sm:text-sm text-ink">
+        {personal.shortName.toLowerCase()}
+      </span>
+    </a>
+
+    <!-- CENTER: desktop nav links (hidden on mobile) -->
+    <nav class="liquid-glass hidden md:flex items-center gap-1 rounded-full px-2 h-11" aria-label="Primary">
+      {navLinks.map((l) => (
+        <a
+          href={l.href}
+          data-top-nav-item={l.href}
+          class="tap-press px-4 h-8 inline-flex items-center rounded-full text-sm text-ink-muted hover:text-ink hover:bg-white/5 transition-colors label-eyebrow"
+        >
+          {l.label.toLowerCase()}
+        </a>
+      ))}
+    </nav>
+
+    <!-- RIGHT: resume CTA — icon-only on mobile, icon+label on sm+ -->
+    <button
+      type="button"
+      data-resume-trigger
+      data-magnetic
+      aria-label="View resume"
+      class="liquid-glass-accent liquid-glass tap-press relative inline-flex items-center justify-center gap-2 rounded-full text-ink hover:text-accent transition-colors w-10 h-10 sm:w-auto sm:h-11 sm:px-5"
+    >
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+        <polyline points="14 2 14 8 20 8"/>
+      </svg>
+      <span class="hidden sm:inline text-sm font-medium">resume</span>
+    </button>
+  </div>
+</header>
+
+<!-- ─── MOBILE BOTTOM DOCK ──────────────────────────────────────────────────── -->
+<!-- Expand-on-active dock: inactive items show icon only; active item expands
+     inline to show icon + label. Hidden on md+ since the top nav covers desktop. -->
+<nav
+  data-mobile-dock
+  aria-label="Mobile navigation"
+  class="md:hidden fixed z-50 left-1/2 -translate-x-1/2 w-[min(94vw,400px)] pointer-events-none"
+  style="bottom: max(env(safe-area-inset-bottom, 0px), 0.875rem);"
+>
+  <!-- soft glow under the dock -->
+  <span
+    class="absolute inset-x-6 -bottom-2 h-8 rounded-full blur-2xl bg-accent/25 opacity-60 pointer-events-none"
+    aria-hidden="true"
+  ></span>
+
+  <div
+    data-mobile-dock-shell
+    class="relative liquid-glass rounded-full p-1.5 flex items-center gap-1 shadow-[0_18px_50px_-12px_rgba(0,0,0,0.7)] pointer-events-auto"
+  >
+    <!-- Sliding active-pill backdrop (iOS continuity).
+         JS positions this under whichever dock item is currently active. -->
+    <span
+      data-dock-slider
+      class="dock-slider"
+      aria-hidden="true"
+    ></span>
+
+    {navLinks.map((l, i) => (
+      <a
+        href={l.href}
+        data-dock-item={l.href}
+        data-active={i === 0 ? 'true' : 'false'}
+        aria-label={l.label}
+        class="dock-item group/dock tap-press-firm"
+      >
+        <span class="dock-glyph">
+          <svg
+            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+            stroke-linecap="round" stroke-linejoin="round"
+            aria-hidden="true"
+            set:html={navIcons[l.href] ?? ''}
+          />
+        </span>
+        <span class="dock-label">{l.label.toLowerCase()}</span>
+      </a>
+    ))}
+  </div>
+</nav>
+
+<style>
+  /* ── Top-nav scroll states ─────────────────────────────────────────────── */
+  /* When scrolled, both pills grow a touch tighter and the bar pads less. */
+  [data-nav][data-scrolled='true'] { backdrop-filter: blur(2px); }
+
+  /* ── Dock items: expand-on-active pattern ──────────────────────────────── */
+  .dock-item {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 0px;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0 10px;
+    border-radius: 9999px;
+    color: rgba(248, 248, 242, 0.55);
+    background: transparent;
+    position: relative;
+    z-index: 1;
+    transition:
+      flex-grow 520ms cubic-bezier(0.32, 0.72, 0, 1),
+      gap 520ms cubic-bezier(0.32, 0.72, 0, 1),
+      padding 520ms cubic-bezier(0.32, 0.72, 0, 1),
+      color 360ms ease;
+    -webkit-tap-highlight-color: transparent;
+    justify-content: center;
+  }
+  .dock-item:focus-visible {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+  }
+
+  .dock-glyph {
+    display: inline-grid;
+    place-items: center;
+    width: 20px;
+    height: 20px;
+    flex: 0 0 20px;
+    transition: transform 520ms cubic-bezier(0.32, 0.72, 0, 1);
+  }
+  .dock-glyph svg { width: 20px; height: 20px; }
+
+  .dock-label {
+    display: inline-block;
+    max-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    opacity: 0;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 12px;
+    letter-spacing: 0.02em;
+    line-height: 1;
+    transition:
+      max-width 520ms cubic-bezier(0.32, 0.72, 0, 1),
+      opacity 280ms ease,
+      margin-left 520ms cubic-bezier(0.32, 0.72, 0, 1);
+  }
+
+  /* Active item expands inline to show its label — visual highlight comes from
+     the .dock-slider pill backdrop, not per-item background. */
+  .dock-item[data-active='true'] {
+    flex: 1 1 auto;
+    gap: 8px;
+    padding: 0 14px;
+    color: #cfe2ff;
+  }
+  .dock-item[data-active='true'] .dock-glyph { transform: scale(1.05); }
+  .dock-item[data-active='true'] .dock-label {
+    max-width: 140px;
+    opacity: 1;
+  }
+
+  /* Respect reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .dock-item,
+    .dock-glyph,
+    .dock-label { transition: none; }
+  }
+
+  /* ── Top-nav active-link underline ─────────────────────────────────────── */
+  [data-top-nav-item][data-active='true'] {
+    color: #f8f8f2;
+    background: rgba(255, 255, 255, 0.04);
+  }
+</style>
+
+<script>
+  // ─── Top-nav shrink on scroll ────────────────────────────────────────────
+  const nav = document.querySelector<HTMLElement>('[data-nav]');
+  const navInner = document.querySelector<HTMLElement>('[data-nav-inner]');
+  const onScroll = () => {
+    if (!nav || !navInner) return;
+    if (window.scrollY > 24) {
+      nav.dataset.scrolled = 'true';
+      navInner.classList.add('pt-2', 'md:pt-3');
+      navInner.classList.remove('pt-3', 'sm:pt-4', 'md:pt-6');
+    } else {
+      nav.dataset.scrolled = 'false';
+      navInner.classList.remove('pt-2', 'md:pt-3');
+      navInner.classList.add('pt-3', 'sm:pt-4', 'md:pt-6');
+    }
+  };
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  // ─── Active-section tracking — drives both top-nav and bottom dock ───────
+  const dock = document.querySelector<HTMLElement>('[data-mobile-dock]');
+  const dockItems = dock
+    ? Array.from(dock.querySelectorAll<HTMLAnchorElement>('[data-dock-item]'))
+    : [];
+  const topItems = Array.from(
+    document.querySelectorAll<HTMLAnchorElement>('[data-top-nav-item]'),
+  );
+
+  const setActive = (href: string) => {
+    dockItems.forEach((it) => {
+      it.dataset.active = it.dataset.dockItem === href ? 'true' : 'false';
+    });
+    topItems.forEach((it) => {
+      it.dataset.active = it.dataset.topNavItem === href ? 'true' : 'false';
+    });
+    // Slide the dock pill backdrop to whichever item is now active.
+    // requestAnimationFrame so we read the post-CSS-transition layout.
+    requestAnimationFrame(positionDockSlider);
+    // Re-run once more after the flex-grow transition finishes so the
+    // pill ends up snugly under the (now wider) active item.
+    window.setTimeout(positionDockSlider, 560);
+  };
+
+  // ── Sliding dock indicator ───────────────────────────────────────────────
+  const slider = document.querySelector<HTMLElement>('[data-dock-slider]');
+  const dockShell = document.querySelector<HTMLElement>('[data-mobile-dock-shell]');
+  const positionDockSlider = () => {
+    if (!slider || !dockShell) return;
+    const active = dockItems.find((it) => it.dataset.active === 'true');
+    if (!active) return;
+    const shellRect = dockShell.getBoundingClientRect();
+    const itemRect = active.getBoundingClientRect();
+    const left = itemRect.left - shellRect.left;
+    slider.style.width = `${itemRect.width}px`;
+    slider.style.transform = `translateX(${left - 6}px)`;
+  };
+  // Initial positioning (after layout settles)
+  window.setTimeout(positionDockSlider, 80);
+  window.setTimeout(positionDockSlider, 320);
+  window.addEventListener('resize', positionDockSlider, { passive: true });
+
+  // Watch every section the dock points to; pick the one most in view.
+  const hrefs = Array.from(
+    new Set([
+      ...dockItems.map((d) => d.dataset.dockItem),
+      ...topItems.map((d) => d.dataset.topNavItem),
+    ]),
+  ).filter((h): h is string => !!h);
+
+  const sections = hrefs
+    .map((h) => document.querySelector<HTMLElement>(h))
+    .filter((s): s is HTMLElement => !!s);
+
+  if (sections.length) {
+    const ratios = new Map<string, number>();
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => ratios.set(`#${e.target.id}`, e.intersectionRatio));
+        let best = '';
+        let bestRatio = 0;
+        ratios.forEach((r, href) => {
+          if (r > bestRatio) {
+            bestRatio = r;
+            best = href;
+          }
+        });
+        // Only switch when meaningfully in view (avoids flicker at section edges)
+        if (bestRatio > 0.18 && best) setActive(best);
+      },
+      { threshold: [0, 0.18, 0.4, 0.6, 0.85, 1] },
+    );
+    sections.forEach((s) => observer.observe(s));
+  }
+
+  // Tap haptic feedback on supported devices (Android primarily).
+  dockItems.forEach((it) =>
+    it.addEventListener('click', () => {
+      if ('vibrate' in navigator) navigator.vibrate?.(6);
+    }),
+  );
+</script>
+
+

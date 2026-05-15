@@ -1,0 +1,75 @@
+---
+import { techStack } from '@/data/site';
+
+// Row 1: tech names (16 items)
+const row1Items = techStack.slice(0, 13).map((t) => t.name);
+// Row 2: achievement-style metric chips
+const row2Items = [
+  '10K+ records / day',
+  '99.9% uptime',
+  'FHIR R4',
+  '85%+ test coverage',
+  '40% latency cut',
+  '60% faster deploys',
+  '70% cost reduction',
+  '95% deploy success',
+  'HIPAA compliant',
+  'AWS EKS',
+  'Apache Camel',
+  'Spring Boot',
+  'Kafka',
+];
+
+const triple = <T,>(arr: T[]) => [...arr, ...arr, ...arr];
+const r1 = triple(row1Items);
+const r2 = triple(row2Items);
+---
+
+<section
+  id="marquee"
+  data-marquee-section
+  class="relative py-14 sm:py-20 md:py-28 overflow-hidden"
+  aria-hidden="true"
+>
+  <div class="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_center,_rgba(59,130,246,0.08),_transparent_70%)]"></div>
+
+  <!-- edge fades so chips don't pop in/out abruptly -->
+  <div class="pointer-events-none absolute inset-y-0 left-0 w-16 sm:w-28 md:w-40 z-10 bg-gradient-to-r from-base-page to-transparent"></div>
+  <div class="pointer-events-none absolute inset-y-0 right-0 w-16 sm:w-28 md:w-40 z-10 bg-gradient-to-l from-base-page to-transparent"></div>
+
+  <div class="flex flex-col gap-3 sm:gap-4 md:gap-5">
+    <!-- Row 1: scrolls LEFT -->
+    <div class="marquee-track">
+      <div data-marquee-row="1" class="marquee-inner marquee-left flex gap-2.5 sm:gap-3 md:gap-4 whitespace-nowrap">
+        {r1.map((item) => (
+          <span
+            class="shrink-0 px-4 sm:px-6 md:px-8 py-2.5 sm:py-3 md:py-4 rounded-full text-sm sm:text-base md:text-xl font-display font-medium tracking-tight bg-[#13131a] text-white ring-1 ring-white/10 shadow-[0_1px_0_rgba(255,255,255,0.04)_inset,0_8px_24px_-12px_rgba(0,0,0,0.6)]"
+          >
+            {item}
+          </span>
+        ))}
+      </div>
+    </div>
+
+    <!-- Row 2: scrolls RIGHT -->
+    <div class="marquee-track">
+      <div data-marquee-row="2" class="marquee-inner marquee-right flex gap-2.5 sm:gap-3 md:gap-4 whitespace-nowrap">
+        {r2.map((item, i) => {
+          const isAccent = i % 3 === 0;
+          return (
+            <span
+              class:list={[
+                'shrink-0 px-4 sm:px-6 md:px-8 py-2.5 sm:py-3 md:py-4 rounded-full text-sm sm:text-base md:text-xl font-display font-medium tracking-tight',
+                isAccent
+                  ? 'bg-accent text-white ring-1 ring-accent/60 shadow-[0_8px_28px_-10px_rgba(59,130,246,0.6)]'
+                  : 'bg-[#13131a] text-white ring-1 ring-white/10'
+              ]}
+            >
+              {item}
+            </span>
+          );
+        })}
+      </div>
+    </div>
+  </div>
+</section>
