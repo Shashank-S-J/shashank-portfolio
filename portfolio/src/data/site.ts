@@ -71,7 +71,7 @@ export const personal = {
   phone: '+91 97419 91065',
   github: 'https://github.com/Shashank-S-J',
   linkedin: 'https://linkedin.com/in/shashank-s-j-sasalu',
-  resumeUrl: '/resume.pdf',
+  resumeUrl: '/shashanksj.pdf',
   bio: `Software engineer with 2 years building scalable Java backends and ETL pipelines on AWS — shipping production systems that move 10,000+ records daily at 99.9% uptime. I care about clean APIs, observable systems, and infrastructure that does not wake people up at 3 AM.`,
   longBio: `Currently at Happiest Minds Technologies, working on FHIR R4–compliant healthcare data integration with Spring Boot, Apache Camel, and AWS EKS. Strong on microservices, Terraform IaC, CI/CD, and performance tuning across Hibernate/JPA + Redis caching. OCI 2025 Generative AI Professional. I write the unit tests I want to inherit.`,
 } as const;

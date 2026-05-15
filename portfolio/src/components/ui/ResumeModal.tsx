@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 
-const RESUME_URL = '/resume.pdf';
+const RESUME_URL = '/shashanksj.pdf';
 
 export default function ResumeModal() {
   const [open, setOpen] = useState(false);
