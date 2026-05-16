@@ -72,7 +72,7 @@ export const personal = {
   github: 'https://github.com/Shashank-S-J',
   linkedin: 'https://linkedin.com/in/shashank-s-j-sasalu',
   resumeUrl: '/shashanksj.pdf',
-  bio: `Software engineer with 2 years building scalable Java backends and ETL pipelines on AWS — shipping production systems that move 10,000+ records daily at 99.9% uptime. I care about clean APIs, observable systems, and infrastructure that does not wake people up at 3 AM.`,
+  bio: `Software engineer with 2 years building scalable Java backends and ETL pipelines on AWS — shipping production systems that move 10,000+ records daily at 99.9% uptime. I care about clean APIs, observable systems, and infrastructure that stays boring in production.`,
   longBio: `Currently at Happiest Minds Technologies, working on FHIR R4–compliant healthcare data integration with Spring Boot, Apache Camel, and AWS EKS. Strong on microservices, Terraform IaC, CI/CD, and performance tuning across Hibernate/JPA + Redis caching. OCI 2025 Generative AI Professional. I write the unit tests I want to inherit.`,
 } as const;
 
@@ -123,6 +123,7 @@ export const techStack: TechItem[] = [
   { name: 'Terraform',    category: 'Cloud & DevOps', icon: 'devicon-terraform-plain' },
   { name: 'Jenkins',      category: 'Cloud & DevOps', icon: 'devicon-jenkins-plain' },
   { name: 'GitHub Actions', category: 'Cloud & DevOps', icon: 'devicon-githubactions-plain' },
+  { name: 'Linux',        category: 'Cloud & DevOps', icon: 'devicon-linux-plain' },
   { name: 'Azure',        category: 'Cloud & DevOps', icon: 'devicon-azure-plain' },
   { name: 'OCI',          category: 'Cloud & DevOps', icon: 'devicon-oracle-original' },
 
